@@ -9,6 +9,14 @@
   ([rows cols] (empty-board rows cols 0)))
 
 ;; Utility Functions
+(defn sizeb
+  "Game's Board's size as a column-major index (i.e. [1 2] for board [[x x]]).
+
+   Assumes uniform sized columns."
+  [game]
+  (let [board (:board game)]
+    [(count (first board)) (count board)]))
+
 (defn mapb [f board]
   (mapv (fn [row] (mapv f row)) board))
 
@@ -38,14 +46,14 @@
 (defn collided? [game]
   (let [piece-idxs (p/occupied-idxs (:piece game))]
     (or (some (partial occupied? (:board game)) piece-idxs)
-        (some (partial hit-bottom? (:size game)) piece-idxs))))
+        (some (partial hit-bottom? (sizeb game)) piece-idxs))))
 
 (defn valid-posn?
   "Is :piece in a valid position?"
   [game]
   (let [piece-idxs (p/occupied-idxs (:piece game))]
     ;; Every part of the piece is inside the board
-    (and (every? (partial inside-board? (:size game)) piece-idxs)
+    (and (every? (partial inside-board? (sizeb game)) piece-idxs)
          (not-any? (partial occupied? (:board game)) piece-idxs))))
 
 (defn graft-piece-to-board [game]
