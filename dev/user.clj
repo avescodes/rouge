@@ -7,7 +7,8 @@
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [lanterna.screen :as lanterna]
             [io.rkn.tetra :as t]
-            [io.rkn.tetra :as b]
+            [io.rkn.tetra.board :as b]
+            [io.rkn.tetra.game :as g]
             [io.rkn.tetra.system :as system]))
 
 (def game nil)

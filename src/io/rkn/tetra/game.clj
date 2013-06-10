@@ -1,4 +1,4 @@
-(io.rkn.tetra.game
+(ns io.rkn.tetra.game
  (:require [io.rkn.tetra.board :as b]))
 
 (defn select-tetra [game]
@@ -12,5 +12,7 @@
     (if (b/valid-posn? potential-state)
       potential-state
       (if (b/collided? potential-state)
-        (b/graft-piece-to-board game)
+        (-> game
+            b/graft-piece-to-board 
+            (dissoc :piece))
         game))))

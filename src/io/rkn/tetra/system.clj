@@ -1,6 +1,8 @@
 (ns io.rkn.tetra.system
   (:require [io.rkn.tetra.pieces :as p]
             [io.rkn.tetra.board :as b]
+            [io.rkn.tetra.drawing :as d]
+            [io.rkn.tetra.game :as g]
             [lanterna.screen :as s]))
 
 (defrecord UI [kind])
@@ -13,24 +15,6 @@
      :piece nil
      :screen (s/get-screen screen-type)
      :uis [{:kind :play}]}))
-
-(defn clear-screen [screen]
-  (let [blank (apply str (repeat 80 \space))]
-    (doseq [row (range 24)]
-      (s/put-string screen 0 row blank))))
-
-(defmulti draw-ui (fn [ui game] (:kind ui)))
-
-(defmethod draw-ui :play [ui game]
-  (s/put-string (:screen game) 0 0 "Congratulations, you win!")
-  (s/put-string (:screen game) 0 1 "Press escape to exit, anything else to restart."))
-
-(defn draw-game [game]
-  (let [screen (:screen game)]
-    (clear-screen screen)
-    (doseq [ui (:uis game)]
-      (draw-ui ui game))
-    (s/redraw screen)))
 
 (defmulti process-input
   (fn [game input] (-> game :uis last :kind)))
@@ -47,13 +31,40 @@
 (defmulti run-game
   (fn [game] (-> game :uis last :kind)))
 
+(defn refill-piece [game]
+  (if (:piece game)
+    game
+    (g/select-tetra game)))
+
+(defn tick-clock [game]
+  (let [now (System/currentTimeMillis)
+        before (:last-fall-time game)]
+    ;; TODO: How can this be more well expressed?
+    (if before
+      (if (> (- now before) 500)
+        (-> game
+            (assoc :fall-now true)
+            (assoc :last-fall-time now))
+        game)
+      (assoc game :last-fall-time now))))
+
+(defn maybe-fall [game]
+  (if (:fall-now game)
+    (-> game
+        g/fall
+        (dissoc :fall-now))
+    game))
+
 (defmethod run-game :play [game]
-    (loop [{:keys [input uis] :as game} game]
+  (loop [{:keys [input uis] :as game} game]
     (when-not (empty? uis)
-      (draw-game game)
-      (if (nil? input)
-        (recur (get-input game true))
-        (recur (process-input (dissoc game :input) input))))))
+      (let [game (-> game
+                     refill-piece
+                     tick-clock
+                     maybe-fall)]
+        (d/draw-game game)
+        (Thread/sleep 10)
+        (recur game)))))
 
 (defn -main [& args]
   (let [args (set args)

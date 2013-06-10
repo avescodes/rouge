@@ -5,29 +5,34 @@
 (def create-vector (comp vec repeat))
 
 (defn empty-board
-  ([rows cols fill] (create-vector rows (create-vector cols 0)))
+  ([rows cols fill] (create-vector rows (create-vector cols fill)))
   ([rows cols] (empty-board rows cols 0)))
 
 ;; Utility Functions
 (defn sizeb
-  "Game's Board's size as a column-major index (i.e. [1 2] for board [[x x]]).
+  "Game's Board's size as a row-major index (i.e. [1 2] for board [[x x]]).
 
    Assumes uniform sized columns."
   [game]
   (let [board (:board game)]
-    [(count (first board)) (count board)]))
+    [(count board) (count (first board))]))
 
-(defn mapb [f board]
+(defn mapb
+  "Map f over each element in board matrix."
+  [f board]
   (mapv (fn [row] (mapv f row)) board))
 
 (defn set-in-board
-  "Set value at coords in game's :board to v"
-  [game coords v]
+  "Set value at coords in game's :board to v. Coords are row-major
+   order." [game coords v]
   (let [ks (concat [:board] coords)]
     (assoc-in game ks v)))
 
 ;; Game Logic predicates
-(defn inside-board? [board-size coords]
+(defn inside-board?
+  "Check if a row-major set of coords is not out-of-bounds of
+   row-major board-size"
+  [board-size coords]
   (let [[row col] coords
         [rows cols] board-size]
     (and (>= row 0)
@@ -35,28 +40,38 @@
          (>= col 0)
          (< col cols))))
 
-(defn occupied? [board coords]
+(defn occupied?
+  "Check if coords is non-empty (0) in board"
+  [board coords]
   (not= 0 (get-in board coords)))
 
-(defn hit-bottom? [board-size coords]
+(defn hit-bottom?
+  "Check if row-major co-ordinates are below bottom of board-size."
+  [board-size coords]
   (let [[row _] coords
         [rows _] board-size]
     (>= row rows)))
 
-(defn collided? [game]
+(defn collided?
+  "Check if a game-state contains any piece-to-landed or
+   piece-to-ground collisions."
+  [game]
   (let [piece-idxs (p/occupied-idxs (:piece game))]
     (or (some (partial occupied? (:board game)) piece-idxs)
         (some (partial hit-bottom? (sizeb game)) piece-idxs))))
 
 (defn valid-posn?
-  "Is :piece in a valid position?"
+  "Is :piece in a valid position (inside the board and in no occupied
+   spaces)?"
   [game]
   (let [piece-idxs (p/occupied-idxs (:piece game))]
     ;; Every part of the piece is inside the board
     (and (every? (partial inside-board? (sizeb game)) piece-idxs)
          (not-any? (partial occupied? (:board game)) piece-idxs))))
 
-(defn graft-piece-to-board [game]
+(defn graft-piece-to-board
+  "Return the game where :piece has been shaded-in in :board."
+  [game]
   (let [piece (:piece game)]
     (loop [new-game game
            [idx & remaining-idxs] (p/occupied-idxs piece)]
