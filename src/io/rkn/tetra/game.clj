@@ -8,7 +8,9 @@
         (assoc-in [:tetras] others))))
 
 (defn fall [game]
-  (let [potential-state (update-in game [:piece :position :row] inc)]
+  (let [potential-state (-> game
+                            (dissoc :fall-now?)
+                            (update-in [:piece :position :row] inc))]
     (if (b/valid-posn? potential-state)
       potential-state
       (if (b/collided? potential-state)
