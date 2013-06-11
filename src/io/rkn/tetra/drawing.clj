@@ -26,6 +26,12 @@
 
 (defmulti draw-ui (fn [ui game] (:kind ui)))
 
+(defmethod draw-ui :menu [ui game]
+  (let [screen (:screen game)]
+    (s/put-string screen 0 0 "Welcome to Tetra, game of the future!")
+    (s/put-string screen 0 1 "Press <enter> to play")
+    (s/put-string screen 0 2 "Press <escape> to quit")))
+
 (defmethod draw-ui :play [ui game]
   (let [drawable-game (b/graft-piece-to-board game)]
     ;; Iterate over every coords of game

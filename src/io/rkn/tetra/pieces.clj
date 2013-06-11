@@ -1,40 +1,71 @@
 (ns io.rkn.tetra.pieces)
 
+(defn transpose [m]
+  (apply mapv vector m))
+
 (def tetras
   {:square {:shape [[1 1]
                     [1 1]]
             :position {:row 0, :col 0}
-            :color 1}
+            :color 1
+            :rotations []}
    :line {:shape [[1]
                   [1]
                   [1]
                   [1]]
           :position {:row 0 :col 0}
-          :color 2}
+          :color 2
+          :rotations [[[1 1 1 1]]]}
    :t {:shape [[1 1 1]
                [0 1 0]]
        :position {:row 0 :col 0}
-       :color 3}
+       :color 3
+       :rotations [[[0 1]
+                    [1 1]
+                    [0 1]]
+                   [[0 1 0]
+                    [1 1 1]]
+                   [[1 0]
+                    [1 1]
+                    [1 0]]]}
    :j {:shape [[1 1]
                [1 0]
                [1 0]]
        :position {:row 0 :col 0}
-       :color 4}
+       :color 4
+       :rotations [[[1 1 1]
+                    [0 0 1]]
+                   [[0 1]
+                    [0 1]
+                    [1 1]]
+                   [[1 0 0]
+                    [1 1 1]]]}
    :l {:shape [[1 1]
                [0 1]
                [0 1]]
        :position {:row 0 :col 0}
-       :color 5}
+       :color 5
+       :rotations [[[0 0 1]
+                    [1 1 1]]
+                   [[1 0]
+                    [1 0]
+                    [1 1]]
+                   [[1 1 1]
+                    [1 0 0]]]}
    :z {:shape [[0 1]
                [1 1]
                [1 0]]
        :position {:row 0 :col 0}
-       :color 6}
+       :color 6
+       :rotations [[1 1 0]
+                   [0 1 1]]}
    :s {:shape [[1 0]
                [1 1]
                [0 1]]
        :position {:row 0 :col 0}
-       :color 7}})
+       :color 7
+       :rotations [[[0 1 1]
+                    [1 1 0]]]}})
 
 (defn occupied-idxs
   "Produce a sequence of all the indices a given piece occupies.
@@ -53,17 +84,9 @@
        (+ col offset-col)])))
 
 ;; Rotation
-(defn transpose [m]
-  (apply mapv vector m))
-
-(def rotate-shape-fns
-  [(comp transpose reverse)
-   transpose])
-
-(defn rotate-piece [piece]
-  (let [rotation-mod (mod (or (:rotation piece) 0)
-                          2)
-        rotation-fn (nth rotate-shape-fns rotation-mod)]
+(defn next-rotation-shape [piece]
+  (let [{:keys [shape rotations]} piece
+        [new-shape & new-rotations] (conj rotations shape)]
     (-> piece
-        (assoc-in [:shape] (rotation-fn (:shape piece)))
-        (assoc-in [:rotation] (inc rotation-mod)))))
+        (assoc :shape new-shape)
+        (assoc :rotations (vec new-rotations)))))

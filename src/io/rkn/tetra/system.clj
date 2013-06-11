@@ -15,21 +15,31 @@
      :tetras piece-stream
      :piece nil
      :screen (s/get-screen screen-type)
-     :uis [{:kind :play}]}))
+     :uis [{:kind :menu}]}))
 
 (defmulti process-input
   (fn [game] (-> game :uis last :kind)))
 
+(defmethod process-input :menu [game]
+  (let [input (:input game)
+        game (dissoc game :input)]
+    (condp = input
+      :escape (assoc game :uis [])
+      :enter (assoc game :uis [{:kind :play}])
+      game)))
+
 (defmethod process-input :play [game]
-  (let [new-state (condp = (:input game)
-                    :escape (assoc game :uis [])
-                    :right (update-in game [:piece :position :col] inc)
-                    :left (update-in game [:piece :position :col] dec)
-                    :down (update-in game [:piece :position :row] inc)
-                    :up (update-in game [:piece] p/rotate-piece))]
+  (let [input (:input game)
+        game-sans-input (dissoc game :input)
+        new-state (condp = input
+                    :escape (assoc game-sans-input :uis [])
+                    :right (update-in game-sans-input [:piece :position :col] inc)
+                    :left (update-in game-sans-input [:piece :position :col] dec)
+                    :down (update-in game-sans-input [:piece :position :row] inc)
+                    :up (update-in game-sans-input [:piece] p/next-rotation-shape))]
     (if (b/valid-posn? new-state)
       new-state
-      game)))
+      game-sans-input)))
 
 (defn get-input [game block?]
   (let [input-fn (if block?
@@ -39,6 +49,14 @@
 
 (defmulti run-game
   (fn [game] (-> game :uis last :kind)))
+
+(defmethod run-game :menu [game]
+  (loop [{:keys [input uis] :as game} game]
+    (when-not (empty? uis)
+      (d/draw-game game)
+      (if input
+        (run-game (process-input game))
+        (run-game (get-input game true))))))
 
 (defn game-over? [game] false)
 
@@ -76,7 +94,7 @@
          (recur (g/fall game))
 
          (:input game)
-         (recur (dissoc (process-input game) :input))
+         (recur (process-input game))
 
          :else
          (do (Thread/sleep 10)
