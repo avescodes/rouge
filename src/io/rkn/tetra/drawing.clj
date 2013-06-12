@@ -35,12 +35,12 @@
 (defmethod draw-ui :play [ui game]
   (let [drawable-game (b/graft-piece-to-board game)]
     ;; Iterate over every coords of game
-    (doseq [[y row] (with-indices (:board drawable-game))]
-      (doseq [[x point] (with-indices row)]
-        (s/put-string (:screen drawable-game)
-                      x y
-                      (char-for point)
-                      (get palette point {}))))))
+    (doseq [[y row] (with-indices (:board drawable-game))
+            [x point] (with-indices row)]
+      (s/put-string (:screen drawable-game)
+                    x y
+                    (char-for point)
+                    (get palette point {})))))
 
 (defn draw-game [game]
   (let [screen (:screen game)]

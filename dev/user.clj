@@ -9,7 +9,8 @@
             [io.rkn.tetra :as t]
             [io.rkn.tetra.board :as b]
             [io.rkn.tetra.game :as g]
-            [io.rkn.tetra.system :as system]))
+            [io.rkn.tetra.system :as system]
+            [io.rkn.tetra.pieces :as pieces]))
 
 (def game nil)
 
