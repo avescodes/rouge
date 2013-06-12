@@ -23,17 +23,17 @@
   (mapv (fn [row] (mapv f row)) board))
 
 (defn set-in-board
-  "Set value at coords in game's :board to v. Coords are row-major
-   order." [game coords v]
-  (let [ks (concat [:board] coords)]
+  "Set value at idx in game's :board to v. idx is in row-major order."
+   [game idx v]
+  (let [ks (concat [:board] idx)]
     (assoc-in game ks v)))
 
 ;; Game Logic predicates
 (defn inside-board?
-  "Check if a row-major set of coords is not out-of-bounds of
+  "Check if a row-major idx is not out-of-bounds of
    row-major board-size"
-  [board-size coords]
-  (let [[row col] coords
+  [board-size idx]
+  (let [[row col] idx
         [rows cols] board-size]
     (and (>= row 0)
          (< row rows)
@@ -41,14 +41,14 @@
          (< col cols))))
 
 (defn occupied?
-  "Check if coords is non-empty (0) in board"
-  [board coords]
-  (not= 0 (get-in board coords)))
+  "Check if row-major idx is non-empty (0) in board"
+  [board idx]
+  (not= 0 (get-in board idx)))
 
 (defn hit-bottom?
-  "Check if row-major co-ordinates are below bottom of board-size."
-  [board-size coords]
-  (let [[row _] coords
+  "Check if row-major idx is below bottom of board-size."
+  [board-size idx]
+  (let [[row _] idx
         [rows _] board-size]
     (>= row rows)))
 

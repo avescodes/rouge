@@ -6,8 +6,6 @@
             [io.rkn.tetra.pieces :as p]
             [lanterna.screen :as s]))
 
-(defrecord UI [kind])
-
 (defn new-game
   [screen-type size] 
   (let [piece-stream (repeatedly #(rand-nth (vals p/tetras)))]
@@ -36,7 +34,7 @@
                     :right (update-in game-sans-input [:piece :position :col] inc)
                     :left (update-in game-sans-input [:piece :position :col] dec)
                     :down (update-in game-sans-input [:piece :position :row] inc)
-                    :up (update-in game-sans-input [:piece] p/next-rotation-shape)
+                    :up (update-in game-sans-input [:piece] g/rotate)
                     game)]
     (if (b/valid-posn? new-state)
       new-state

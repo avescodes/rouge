@@ -84,9 +84,19 @@
        (+ col offset-col)])))
 
 ;; Rotation
+(defn max-kick [piece]
+  (let [shape (:shape piece)
+        [m n] [(count shape) (count (first shape))]]
+    (Math/abs (- m n))))
+
 (defn next-rotation-shape [piece]
   (let [{:keys [shape rotations]} piece
         [new-shape & new-rotations] (conj rotations shape)]
     (-> piece
         (assoc :shape new-shape)
         (assoc :rotations (vec new-rotations)))))
+
+(defn rotate [game]
+  (assoc game :piece (next-rotation-shape (:piece game))))
+
+(defn kick [] "...")

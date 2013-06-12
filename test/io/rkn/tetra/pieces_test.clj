@@ -2,6 +2,11 @@
   (:require [clojure.test :refer :all]
             [io.rkn.tetra.pieces :refer :all]))
 
+(deftest max-kick-test
+  (is (= 0 (max-kick (tetras :square))))
+  (is (= 1 (max-kick (tetras :t))))
+  (is (= 3 (max-kick (tetras :line)))))
+
 (deftest next-rotation-shape-test
   (let [one-rotation-piece {:shape :a
                             :rotations []}]
