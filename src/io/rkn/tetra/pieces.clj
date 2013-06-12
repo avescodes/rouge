@@ -57,8 +57,8 @@
                [1 0]]
        :position {:row 0 :col 0}
        :color 6
-       :rotations [[1 1 0]
-                   [0 1 1]]}
+       :rotations [[[1 1 0]
+                    [0 1 1]]]}
    :s {:shape [[1 0]
                [1 1]
                [0 1]]

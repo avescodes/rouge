@@ -4,7 +4,8 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [clojure-lanterna "0.9.3"]]
+                 [clojure-lanterna "0.9.3" :exclusions [com.googlecode.lanterna/lanterna]] 
+                 [com.googlecode.lanterna/lanterna "2.1.5"]]
   :main io.rkn.tetra.system
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
