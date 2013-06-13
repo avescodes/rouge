@@ -34,7 +34,7 @@
                     :right (update-in game-sans-input [:piece :position :col] inc)
                     :left (update-in game-sans-input [:piece :position :col] dec)
                     :down (update-in game-sans-input [:piece :position :row] inc)
-                    :up (update-in game-sans-input [:piece] g/rotate)
+                    :up (g/rotate-piece game-sans-input)
                     game)]
     (if (b/valid-posn? new-state)
       new-state
