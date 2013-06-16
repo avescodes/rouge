@@ -49,3 +49,9 @@
       (draw-ui ui game))
     (s/move-cursor screen 0 23)
     (s/redraw screen)))
+
+(defmethod draw-ui :game-over [ui game]
+  (let [screen (:screen game)]
+    (s/put-string screen 0 0 "Game over!")
+    (s/put-string screen 0 1 "Press <enter> to play again")
+    (s/put-string screen 0 2 "Press <escape> to quit")))

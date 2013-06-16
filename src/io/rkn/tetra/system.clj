@@ -40,6 +40,14 @@
       new-state
       game-sans-input)))
 
+(defmethod process-input :game-over [game]
+  (let [input (:input game)
+        game (dissoc game :input)]
+    (condp = input
+      :escape (assoc game :uis [])
+      :enter (assoc game :uis [{:kind :play}])
+      game)))
+
 (defn get-input [game block?]
   (let [input-fn (if block?
                    s/get-key-blocking
@@ -56,13 +64,6 @@
       (if input
         (run-game (process-input game))
         (run-game (get-input game true))))))
-
-(defn game-over? [game] false)
-
-(defn refill-piece [game]
-  (if (:piece game)
-    game
-    (g/select-tetra game)))
 
 (defn tick-clock [game]
   (let [now (System/currentTimeMillis)
@@ -83,8 +84,8 @@
       (let [game (-> game
                      tick-clock)]
         (cond
-         (game-over? game)
-         (recur game) ;; TODO: Push game-over screen
+         (g/game-over? game)
+         (recur (g/end-game game))
 
          (nil? (:piece game))
          (recur (g/select-tetra game))
@@ -101,6 +102,14 @@
          :else
          (do (Thread/sleep 10)
              (recur (get-input game false))))))))
+
+(defmethod run-game :game-over [game]
+  (loop [{:keys [input uis] :as game} game]
+    (when-not (empty? uis)
+      (d/draw-game game)
+      (if input
+        (run-game (process-input game))
+        (run-game (get-input game true))))))
 
 (defn -main [& args]
   (let [args (set args)

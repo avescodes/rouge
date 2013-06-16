@@ -2,6 +2,12 @@
   (:require [io.rkn.tetra.board :as b])
   (:require [io.rkn.tetra.pieces :as p]))
 
+(defn game-over? [game]
+  (not (b/valid-posn? game)))
+
+(defn end-game [game]
+  (assoc game :uis [{:kind :game-over}]))
+
 (defn select-tetra [game]
   (let [[new-piece & others] (:tetras game)]
     (-> game
