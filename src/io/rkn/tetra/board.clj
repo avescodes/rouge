@@ -80,3 +80,20 @@
         (recur (set-in-board new-game idx (:color piece))
                remaining-idxs)))))
 
+(defn full-row? [row] (not-any? #(= 0 %) row))
+
+(defn clearable?
+  "Return truthy if board has any full lines"
+  [game]
+  (let [board (:board game)]
+    (some full-row? board)))
+
+(defn clear-lines [game]
+  (let [board (:board game)
+        [rows cols] (sizeb game)
+        cleared-board (remove full-row? board)
+        lines-needed (- rows (count cleared-board))
+        new-board (into [] (concat (empty-board lines-needed cols)
+                                   cleared-board))
+        new-game     (assoc game :board new-board)]
+    new-game))

@@ -92,6 +92,9 @@
          (:fall-now? game)
          (recur (g/fall game))
 
+         (b/clearable? game)
+         (recur (b/clear-lines game))
+         
          (:input game)
          (recur (process-input game))
 

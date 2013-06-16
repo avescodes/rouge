@@ -87,3 +87,24 @@
     (is (= (assoc game :board [[2 2]
                                [1 1]])
            (graft-piece-to-board game)))))
+
+(deftest clearable?-test
+  (is (clearable? {:board [[1 1]]}))
+  (is (not (clearable? {:board [[0 1]
+                                [0 0]]}))))
+
+(deftest clear-lines-test
+  (is (= {:board [[0 0]
+                  [0 2]]}
+         (clear-lines {:board [[0 2]
+                               [1 1]]})))
+  (is (= {:board [[0 0]
+                  [0 0]
+                  [0 0]
+                  [2 0]
+                  [0 4]]}
+         (clear-lines {:board  [[0 0]
+                                [1 1]
+                                [2 0]
+                                [3 3]
+                                [0 4]]}))))
