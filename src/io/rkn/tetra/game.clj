@@ -29,6 +29,7 @@
       (if (b/collided? potential-state)
         (-> game
             b/graft-piece-to-board
+            (dissoc :fall-now?)
             (dissoc :piece))
         game))))
 
