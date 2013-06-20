@@ -25,7 +25,7 @@
 (defn start []
   (future
     (lanterna/in-screen (:screen game)
-                        (system/run-game game))))
+                        (t/run-game game))))
 
 (defn stop []
   (lanterna/stop (:screen game)))
