@@ -35,7 +35,7 @@
                     :left (update-in game-sans-input [:piece :position :col] dec)
                     :down (update-in game-sans-input [:piece :position :row] inc)
                     :up (g/rotate-piece game-sans-input)
-                    game)]
+                    game-sans-input)]
     (if (b/valid-posn? new-state)
       new-state
       game-sans-input)))
@@ -78,9 +78,11 @@
       (assoc game :last-fall-time now))))
 
 (defmethod run-game :play [game]
-  (loop [{:keys [input uis] :as game} game]
+  (loop [{:keys [input uis callback-fn] :as game} game]
     (when-not (empty? uis)
       (d/draw-game game)
+      (if callback-fn
+        (callback-fn game))
       (let [game (-> game
                      tick-clock)]
         (cond

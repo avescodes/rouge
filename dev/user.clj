@@ -19,7 +19,8 @@
   []
   (set! *print-length* 5)
   (alter-var-root #'game
-                  (constantly (system/new-game :swing [10 5]))))
+                  (constantly (-> (system/new-game :swing [10 5])
+                                  (assoc :callback-fn #(alter-var-root #'game (constantly %)))))))
 
 (defn start []
   (future
@@ -37,3 +38,13 @@
   (init)
   (start))
 
+(comment
+  ;; TODO: thoughts for pausing game from REPL
+  (defn pause []
+    (alter-var-root #'game
+                    #(update-in % [:uis] (fn [uis] (conj uis {:kind :game-over})))))
+
+  (defn resume []
+    (alter-var-root #'game
+                    #(update-in % [:uis] (fn [uis] (conj uis {:kind :game-over})))))
+  )
