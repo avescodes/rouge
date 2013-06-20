@@ -94,6 +94,6 @@
         cleared-board (remove full-row? board)
         lines-needed (- rows (count cleared-board))
         new-board (into [] (concat (empty-board lines-needed cols)
-                                   cleared-board))
-        new-game     (assoc game :board new-board)]
-    new-game))
+                                   cleared-board))]
+    (assoc game :board new-board)))
+    

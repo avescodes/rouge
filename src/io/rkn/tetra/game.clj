@@ -28,6 +28,31 @@
       potential-state
       (if (b/collided? potential-state)
         (-> game
-            b/graft-piece-to-board 
+            b/graft-piece-to-board
             (dissoc :piece))
         game))))
+
+(defn level [game] (+ 1
+                      (quot (:lines-cleared game)
+                            10)))
+
+(def points {1 100
+             2 300
+             3 500
+             4 800})
+
+(defn bump-score [game cleared]
+  (let [to-add (* (get points cleared 0)
+                  (level game))]
+    (-> game
+        (update-in [:score] #(+ % to-add))
+        (update-in [:lines-cleared] #(+ % cleared)))))
+
+(defn clear-and-score
+  "Clear lines, adding score for any removed lines"
+  [game]
+  (let [{:keys [board]} game
+        cleared-lines (count (filter b/full-row? board))
+        cleared-game (b/clear-lines game)]
+    (-> cleared-game
+        (bump-score cleared-lines))))

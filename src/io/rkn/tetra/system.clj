@@ -7,12 +7,14 @@
             [lanterna.screen :as s]))
 
 (defn new-game
-  [screen-type size] 
+  [screen-type size]
   (let [piece-stream (repeatedly #(rand-nth (vals p/tetras)))]
     {:board (apply b/empty-board size)
      :tetras piece-stream
      :piece nil
      :screen (s/get-screen screen-type)
+     :score 0
+     :lines-cleared 0
      :uis [{:kind :menu}]}))
 
 (defmulti process-input
@@ -96,8 +98,8 @@
          (recur (g/fall game))
 
          (b/clearable? game)
-         (recur (b/clear-lines game))
-         
+         (recur (g/clear-and-score game))
+
          (:input game)
          (recur (process-input game))
 
