@@ -36,30 +36,56 @@
 (defn draw-score [game]
   (let [[_ board-rhs] (b/sizeb game)
         x (+ 2 board-rhs)
-        y 1]
+        y 8]
     (s/put-string (:screen game)
                   x y
                   (str "Score: " (:score game)))))
 (defn draw-level [game]
   (let [[_ board-rhs] (b/sizeb game)
         x (+ 2 board-rhs)
-        y 2]
+        y 9]
     (s/put-string (:screen game)
                   x y
                   (str "Level: " (g/level game)))))
 
+(defn draw-board [screen top-left board]
+  (let [[top left] top-left]
+    (doseq [[y row] (with-indices board)
+            [x point] (with-indices row)]
+      (s/put-string screen
+                    (+ left x) (+ top y)
+                    (char-for point)
+                    (get palette point {})))))
+
+(defn draw-next-piece [game]
+  (let [s (:screen game)
+        [_ board-rhs] (b/sizeb game)
+        x (+ 2 board-rhs)
+        y 1]
+    (s/put-string s x (+ y 0) (str "XXXXXX"))
+    (s/put-string s x (+ y 1) (str "X    X"))
+    (s/put-string s x (+ y 2) (str "X    X"))
+    (s/put-string s x (+ y 3) (str "X    X"))
+    (s/put-string s x (+ y 4) (str "X    X"))
+    (s/put-string s x (+ y 5) (str "XXXXXX"))
+    (let [fake-board (b/empty-board 4 4)
+          next-piece (-> game :tetras first)
+          top-left [(+ y 1) (+ x 1)]
+          {next-piece-board :board} (b/graft-piece-to-board {:piece next-piece
+                                                             :board fake-board})]
+      (draw-board s top-left next-piece-board))))
+
+
+
+(def origin [0 0])
 (defmethod draw-ui :play [ui game]
   (let [drawable-game (b/graft-piece-to-board game)
         [_ board-width] (b/sizeb drawable-game)]
     ;; Iterate over every coords of game
-    (doseq [[y row] (with-indices (:board drawable-game))
-            [x point] (with-indices row)]
-      (s/put-string (:screen drawable-game)
-                    x y
-                    (char-for point)
-                    (get palette point {})))
+    (draw-board (:screen game) origin (:board drawable-game))
     (draw-score drawable-game)
-    (draw-level drawable-game)))
+    (draw-level drawable-game)
+    (draw-next-piece drawable-game)))
 
 (defn draw-game [game]
   (let [screen (:screen game)]
