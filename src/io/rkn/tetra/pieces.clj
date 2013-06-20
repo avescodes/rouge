@@ -4,67 +4,80 @@
   (apply mapv vector m))
 
 (def tetras
-  {:square {:shape [[1 1]
-                    [1 1]]
-            :position {:row 0, :col 0}
+  {:square {:shape [[0 0 0 0]
+                    [0 1 1 0]
+                    [0 1 1 0]
+                    [0 0 0 0]]
+            :position {:row -1, :col 3}
             :color 1
             :rotations []}
-   :line {:shape [[1]
-                  [1]
-                  [1]
-                  [1]]
-          :position {:row 0 :col 0}
+   :line {:shape [[0 0 1 0]
+                  [0 0 1 0]
+                  [0 0 1 0]
+                  [0 0 1 0]]
+          :position {:row 0 :col 3}
           :color 2
-          :rotations [[[1 1 1 1]]]}
-   :t {:shape [[1 1 1]
+          :rotations [[[0 0 0 0]
+                       [0 0 0 0]
+                       [1 1 1 1]
+                       [0 0 0 0]]]}
+   :t {:shape [[0 0 0]
+               [1 1 1]
                [0 1 0]]
-       :position {:row 0 :col 0}
+       :position {:row -1 :col 3}
        :color 3
-       :rotations [[[0 1]
-                    [1 1]
-                    [0 1]]
+       :rotations [[[0 1 0]
+                    [1 1 0]
+                    [0 1 0]]
                    [[0 1 0]
-                    [1 1 1]]
-                   [[1 0]
-                    [1 1]
-                    [1 0]]]}
-   :j {:shape [[1 1]
-               [1 0]
-               [1 0]]
-       :position {:row 0 :col 0}
+                    [1 1 1]
+                    [0 0 0]]
+                   [[0 1 0]
+                    [0 1 1]
+                    [0 1 0]]]}
+   :j {:shape [[0 1 1]
+               [0 1 0]
+               [0 1 0]]
+       :position {:row 0 :col 4}
        :color 4
-       :rotations [[[1 1 1]
+       :rotations [[[0 0 0]
+                    [1 1 1]
                     [0 0 1]]
-                   [[0 1]
-                    [0 1]
-                    [1 1]]
+                   [[0 1 0]
+                    [0 1 0]
+                    [1 1 0]]
                    [[1 0 0]
-                    [1 1 1]]]}
-   :l {:shape [[1 1]
-               [0 1]
-               [0 1]]
-       :position {:row 0 :col 0}
+                    [1 1 1]
+                    [0 0 0]]]}
+   :l {:shape [[1 1 0]
+               [0 1 0]
+               [0 1 0]]
+       :position {:row 0 :col 4}
        :color 5
        :rotations [[[0 0 1]
-                    [1 1 1]]
-                   [[1 0]
-                    [1 0]
-                    [1 1]]
-                   [[1 1 1]
+                    [1 1 1]
+                    [0 0 0]]
+                   [[0 1 0]
+                    [0 1 0]
+                    [0 1 1]]
+                   [[0 0 0]
+                    [1 1 1]
                     [1 0 0]]]}
-   :z {:shape [[0 1]
-               [1 1]
-               [1 0]]
-       :position {:row 0 :col 0}
+   :z {:shape [[0 0 1]
+               [0 1 1]
+               [0 1 0]]
+       :position {:row 0 :col 4}
        :color 6
-       :rotations [[[1 1 0]
+       :rotations [[[0 0 0]
+                    [1 1 0]
                     [0 1 1]]]}
-   :s {:shape [[1 0]
-               [1 1]
-               [0 1]]
-       :position {:row 0 :col 0}
+   :s {:shape [[0 1 0]
+               [0 1 1]
+               [0 0 1]]
+       :position {:row 0 :col 4}
        :color 7
-       :rotations [[[0 1 1]
+       :rotations [[[0 0 0]
+                    [0 1 1]
                     [1 1 0]]]}})
 
 (defn occupied-idxs

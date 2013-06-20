@@ -61,21 +61,24 @@
   (let [s (:screen game)
         [_ board-rhs] (b/sizeb game)
         x (+ 2 board-rhs)
-        y 1]
-    (s/put-string s x (+ y 0) (str "XXXXXX"))
-    (s/put-string s x (+ y 1) (str "X    X"))
-    (s/put-string s x (+ y 2) (str "X    X"))
-    (s/put-string s x (+ y 3) (str "X    X"))
-    (s/put-string s x (+ y 4) (str "X    X"))
-    (s/put-string s x (+ y 5) (str "XXXXXX"))
+        y 0]
+    (s/put-string s x (+ y 0) (str "XXXXXXXX"))
+    (s/put-string s x (+ y 1) (str "X......X"))
+    (s/put-string s x (+ y 2) (str "X......X"))
+    (s/put-string s x (+ y 3) (str "X......X"))
+    (s/put-string s x (+ y 4) (str "X......X"))
+    (s/put-string s x (+ y 5) (str "X......X"))
+    (s/put-string s x (+ y 6) (str "X......X"))
+    (s/put-string s x (+ y 7) (str "XXXXXXXX"))
     (let [fake-board (b/empty-board 4 4)
-          next-piece (-> game :tetras first)
-          top-left [(+ y 1) (+ x 1)]
+          next-piece (-> game
+                         :tetras
+                         first
+                         (assoc :position {:row 0 :col 0}))
+          top-left [(+ 2 y) (+ 2 x)]
           {next-piece-board :board} (b/graft-piece-to-board {:piece next-piece
                                                              :board fake-board})]
       (draw-board s top-left next-piece-board))))
-
-
 
 (def origin [0 0])
 (defmethod draw-ui :play [ui game]
