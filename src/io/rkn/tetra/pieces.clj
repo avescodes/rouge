@@ -1,8 +1,5 @@
 (ns io.rkn.tetra.pieces)
 
-(defn transpose [m]
-  (apply mapv vector m))
-
 (def tetras
   {:square {:shape [[0 0 0 0]
                     [0 1 1 0]
@@ -11,74 +8,95 @@
             :position {:row -1, :col 3}
             :color 1
             :rotations []}
-   :line {:shape [[0 0 1 0]
-                  [0 0 1 0]
-                  [0 0 1 0]
-                  [0 0 1 0]]
-          :position {:row 0 :col 3}
+   :line {:shape [[0 0 0 0]
+                  [1 1 1 1]
+                  [0 0 0 0]
+                  [0 0 0 0]]
+          :position {:row -1 :col 3}
           :color 2
-          :rotations [[[0 0 0 0]
+          :rotations [[[0 0 1 0]
+                       [0 0 1 0]
+                       [0 0 1 0]
+                       [0 0 1 0]]
+                      [[0 0 0 0]
                        [0 0 0 0]
                        [1 1 1 1]
-                       [0 0 0 0]]]}
-   :t {:shape [[0 0 0]
+                       [0 0 0 0]]
+                      [[0 1 0 0]
+                       [0 1 0 0]
+                       [0 1 0 0]
+                       [0 1 0 0]]]}
+   :t {:shape [[0 1 0]
                [1 1 1]
-               [0 1 0]]
-       :position {:row -1 :col 3}
+               [0 0 0]]
+       :position {:row 0 :col 3}
        :color 3
        :rotations [[[0 1 0]
-                    [1 1 0]
+                    [0 1 1]
+                    [0 1 0]]
+                   [[0 0 0]
+                    [1 1 1]
                     [0 1 0]]
                    [[0 1 0]
-                    [1 1 1]
-                    [0 0 0]]
-                   [[0 1 0]
-                    [0 1 1]
+                    [1 1 0]
                     [0 1 0]]]}
-   :j {:shape [[0 1 1]
-               [0 1 0]
-               [0 1 0]]
-       :position {:row 0 :col 4}
+   :j {:shape [[1 0 0]
+               [1 1 1]
+               [0 0 0]]
+       :position {:row 0 :col 3}
        :color 4
-       :rotations [[[0 0 0]
+       :rotations [[[0 1 1]
+                    [0 1 0]
+                    [0 1 0]]
+                   [[0 0 0]
                     [1 1 1]
                     [0 0 1]]
                    [[0 1 0]
                     [0 1 0]
                     [1 1 0]]
-                   [[1 0 0]
-                    [1 1 1]
-                    [0 0 0]]]}
-   :l {:shape [[1 1 0]
-               [0 1 0]
-               [0 1 0]]
-       :position {:row 0 :col 4}
+                   ]}
+   :l {:shape [[0 0 1]
+               [1 1 1]
+               [0 0 0]]
+       :position {:row 0 :col 3}
        :color 5
-       :rotations [[[0 0 1]
-                    [1 1 1]
-                    [0 0 0]]
-                   [[0 1 0]
+       :rotations [[[0 1 0]
                     [0 1 0]
                     [0 1 1]]
                    [[0 0 0]
                     [1 1 1]
-                    [1 0 0]]]}
-   :z {:shape [[0 0 1]
+                    [1 0 0]]
+                   [[1 1 0]
+                    [0 1 0]
+                    [0 1 0]]]}
+   :z {:shape [[1 1 0]
                [0 1 1]
-               [0 1 0]]
-       :position {:row 0 :col 4}
+               [0 0 0]]
+       :position {:row 0 :col 3}
        :color 6
-       :rotations [[[0 0 0]
-                    [1 1 0]
-                    [0 1 1]]]}
-   :s {:shape [[0 1 0]
-               [0 1 1]
-               [0 0 1]]
-       :position {:row 0 :col 4}
-       :color 7
-       :rotations [[[0 0 0]
+       :rotations [[[0 0 1]
                     [0 1 1]
-                    [1 1 0]]]}})
+                    [0 1 0]]
+                   [[0 0 0]
+                    [1 1 0]
+                    [0 1 1]]
+                   [[0 1 0]
+                    [1 1 0]
+                    [1 0 0]]]}
+   :s {:shape [[0 1 1]
+               [1 1 0]
+               [0 0 0]]
+       :position {:row 0 :col 3}
+       :color 7
+       :rotations [[[0 1 0]
+                    [0 1 1]
+                    [0 0 1]]
+                   [[0 0 0]
+                    [0 1 1]
+                    [1 1 0]]
+                   [[1 0 0]
+                    [1 1 0]
+                    [0 1 0]]]}})
 
 (defn occupied-idxs
   "Produce a sequence of all the indices a given piece occupies.
@@ -97,11 +115,6 @@
        (+ col offset-col)])))
 
 ;; Rotation
-(defn max-kick [piece]
-  (let [shape (:shape piece)
-        [m n] [(count shape) (count (first shape))]]
-    (Math/abs (- m n))))
-
 (defn next-rotation-shape [piece]
   (let [{:keys [shape rotations]} piece
         [new-shape & new-rotations] (conj rotations shape)]
@@ -111,5 +124,3 @@
 
 (defn rotate [game]
   (assoc game :piece (next-rotation-shape (:piece game))))
-
-(defn kick [] "...")
