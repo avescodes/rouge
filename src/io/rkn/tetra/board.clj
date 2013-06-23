@@ -1,13 +1,6 @@
 (ns io.rkn.tetra.board
   (:require [io.rkn.tetra.pieces :as p]))
 
-;; Board creation
-(def create-vector (comp vec repeat))
-
-(defn empty-board
-  ([rows cols fill] (create-vector rows (create-vector cols fill)))
-  ([rows cols] (empty-board rows cols 0)))
-
 ;; Utility Functions
 (defn sizeb
   "Game's Board's size as a row-major index (i.e. [1 2] for board [[x x]]).
