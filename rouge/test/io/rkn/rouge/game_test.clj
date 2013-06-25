@@ -11,6 +11,7 @@
         [io.pedestal.app.query :only [q]]))
 
 (def new-game-msg {msg/type :new-game msg/topic [:game] :rows 1 :cols 1})
+(def refresh-piece-msg {msg/type :refresh-piece msg/topic [:game :board]})
 ;; Test a transform function
 
 (deftest test-new-game-transform
@@ -25,7 +26,8 @@
     (app/begin app)
     (is (vector?
          (test/run-sync! app [new-game-msg])))
-    (is (= (-> app :state deref :data-model :game :board :landed) [[0]]))))
+    (is (= (-> app :state deref :data-model :game :board :landed) [[0]]))
+    (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically")))
 
 (comment
   ;; Use io.pedestal.app.query to query the current application model

@@ -6,7 +6,7 @@
             [io.pedestal.app-tools.tooling :as tooling]))
 
 (defn put-start-game-messages [input]
-  #_(p/put-message input {msg/type :new-game msg/topic [:game] :rows 5 :cols 10}))
+  (p/put-message input {msg/type :new-game msg/topic [:game] :rows 5 :cols 10}))
 
 (defn ^:export main []
   (let [{:keys [app] :as system} (start/create-app d/data-renderer-config)]
