@@ -53,7 +53,8 @@
         touching {:row 1 :col 0}
         not-touching {:row 0 :col 0}]
     (is (about-to-collide? (assoc-in board [:piece :position] touching)))
-    (is (not (about-to-collide? (assoc-in board [:piece :position] not-touching))))))
+    (is (not (about-to-collide? (assoc-in board [:piece :position] not-touching))))
+    (is (not (about-to-collide? (dissoc board :piece))))))
 
 (comment
   (deftest level-test

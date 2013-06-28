@@ -26,7 +26,8 @@
 
 (defn lower-piece
   ([board _] (lower-piece board))
-  ([board] (update-in board [:piece :position :row] inc)))
+  ([board] (if (:piece board)
+             (update-in board [:piece :position :row] inc))))
 
 (defn about-to-collide?
   "Will a piece collide with the board's grid after the next step of gravity?"

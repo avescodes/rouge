@@ -34,11 +34,11 @@
            (graft-piece-to-grid {} (dissoc board :piece))))
     (is (not (graft-piece-to-grid {} {})))))
 
-(defn with-posn [posn game]
-    (assoc-in game [:piece :position] posn))
+(defn with-posn [posn board]
+    (assoc-in board [:piece :position] posn))
 
 (deftest collided?-test
-  (let [game {:grid [[0 0 0]
+  (let [board {:grid [[0 0 0]
                       [0 0 0]
                       [1 1 0]]
               :piece {:shape [[1]]}}
@@ -46,10 +46,11 @@
         hit-landed {:row 2 :col 0}
         missed-landed {:row 2 :col 2}
         hit-ground {:row 3 :col 2}]
-    (is (collided? (with-posn hit-landed game)))
-    (is (collided? (with-posn hit-ground game)))
-    (is (not (collided? (with-posn top game))))
-    (is (not (collided? (with-posn missed-landed game))))))
+    (is (collided? (with-posn hit-landed board)))
+    (is (collided? (with-posn hit-ground board)))
+    (is (not (collided? (with-posn top board))))
+    (is (not (collided? (with-posn missed-landed board))))
+    (is (not (collided? (dissoc board :piece))))))
 
 (comment
   (deftest inside-board?-test
