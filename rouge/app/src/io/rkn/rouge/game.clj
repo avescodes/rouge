@@ -1,7 +1,8 @@
 (ns ^:shared io.rkn.rouge.game
   (:require [io.pedestal.app.messages :as msg]
             [io.rkn.rouge.game.board :as b]
-            [io.rkn.rouge.game.pieces :as p]))
+            [io.rkn.rouge.game.pieces :as p]
+            [io.rkn.util.platform :as plat]))
 
 (defn new-game [_ msg]
   (let [rows (get msg :rows 20)
@@ -31,7 +32,7 @@
 
 (defn about-to-collide?
   "Will a piece collide with the board's grid after the next step of gravity?"
-  ([board _] (about-to-collide? board))
+  ([_ board] (about-to-collide? board))
   ([board] (-> board
                lower-piece
                b/collided?)))

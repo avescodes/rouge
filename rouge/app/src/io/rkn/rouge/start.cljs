@@ -7,12 +7,14 @@
             [io.rkn.rouge.behavior :as behavior]
             [io.rkn.rouge.rendering :as rendering]))
 
-(defn create-app [render-config]
-  (let [app (app/build behavior/example-app)
-        render-fn (push-render/renderer "content" render-config render/log-fn)
-        app-model (render/consume-app-model app render-fn)]
-    (app/begin app)
-    {:app app :app-model app-model}))
+(defn create-app
+  ([render-config] (create-app render-config behavior/example-app))
+  ([render-config behavior]
+   (let [app (app/build behavior)
+         render-fn (push-render/renderer "content" render-config render/log-fn)
+         app-model (render/consume-app-model app render-fn)]
+     (app/begin app)
+     {:app app :app-model app-model})))
 
 (defn ^:export main []
   (create-app (rendering/render-config)))
