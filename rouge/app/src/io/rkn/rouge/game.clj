@@ -9,6 +9,7 @@
         cols (get msg :cols 10)]
     {:board {:grid (b/empty-board rows cols)
              :piece nil}}))
+
 (defn refresh-piece-if-missing [piece]
   (when-not piece
     [{msg/type :refresh-piece msg/topic [:game :board]}]))
@@ -37,3 +38,7 @@
                lower-piece
                b/collided?)))
 
+(defn game-over?
+  "Is a game over? (i.e. piece is in an invalid position)"
+  ([_ board] (game-over? board))
+  ([board] (not (b/valid-posn? board))))

@@ -48,6 +48,26 @@
     (or (some (partial occupied? grid) piece-idxs)
         (some (partial hit-bottom? (sizeb board)) piece-idxs))))
 
+(defn inside-board?
+  "Check if a row-major idx is not out-of-bounds of
+   row-major board-size"
+  [board-size idx]
+  (let [[row col] idx
+        [rows cols] board-size]
+    (and (>= row 0)
+         (< row rows)
+         (>= col 0)
+         (< col cols))))
+
+(defn valid-posn?
+  "Is :piece in a valid position (inside the board and in no occupied
+   spaces)?"
+  [{:keys [grid piece] :as board}]
+  (let [piece-idxs (p/occupied-idxs piece)]
+    ;; Every part of the piece is inside the board
+    (and (every? (partial inside-board? (sizeb board)) piece-idxs)
+         (not-any? (partial occupied? grid) piece-idxs))))
+
 (defn graft-piece-to-grid
     "Return a board where piece has been grafted to grid."
   ([_ board] (graft-piece-to-grid board))
