@@ -5,15 +5,14 @@
             [io.pedestal.app.render.push.handlers.automatic :as d]
             [io.rkn.rouge.start :as start]
             [io.rkn.rouge.behavior :as behavior]
-            [io.pedestal.app-tools.tooling :as tooling]
-            [cljs.core.async :refer  [chan close!]])
-  (:require-macros
-    [cljs.core.async.macros :as m :refer  [go]]))
+            [io.rkn.rouge.services :as services]
+            [io.pedestal.app-tools.tooling :as tooling]))
 
 (defn put-start-game-messages [input]
-  (p/put-message input {msg/type :new-game msg/topic [:game] :rows 5 :cols 10}))
+  (p/put-message input {msg/type :new-game msg/topic [:game] :rows 8 :cols 10}))
 
-(defn debug-emitter [_] [[:transform-enable [:game] :lower-piece [{msg/topic [:game :board]}]]])
+(defn debug-emitter [_] [[:transform-enable [:game] :land-piece [{msg/topic [:game :board]}]]
+                         [:transform-enable [:game] :lower-piece [{msg/topic [:game :board]}]]])
 
 (def debugging-behavior
   {:emit [{:in #{[:game :board] [:game :piece]}
@@ -23,19 +22,7 @@
 (defn ^:export main []
   (let [behavior (merge behavior/example-app debugging-behavior)
         {:keys [app] :as system} (start/create-app d/data-renderer-config behavior)]
+    (app/consume-effects app services/services-fn)
     (put-start-game-messages (:input app))
     system))
 
-
-(defn timeout [ms]
-  (let [c (chan)]
-    (js/setTimeout (fn [] (close! c)) ms)
-    c))
-
-(go
-  (<! (timeout 1000))
-  (.log js/console "Hello")
-  (<! (timeout 1000))
-  (.log js/console "async")
-  (<! (timeout 1000))
-  (.log js/console "world!"))

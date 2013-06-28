@@ -2,7 +2,8 @@
   (:require [io.pedestal.app.messages :as msg]
             [io.rkn.rouge.game.board :as b]
             [io.rkn.rouge.game.pieces :as p]
-            [io.rkn.util.platform :as plat]))
+            [io.rkn.util.platform :as plat]
+            [io.rkn.rouge.game.timers :as t]))
 
 (defn new-game [_ msg]
   (let [rows (get msg :rows 20)
@@ -42,3 +43,19 @@
   "Is a game over? (i.e. piece is in an invalid position)"
   ([_ board] (game-over? board))
   ([board] (not (b/valid-posn? board))))
+
+(defn start-gravity-countdown [_ {:keys [landing?]}]
+  (when-not landing?
+    (t/timeout 1000)))
+
+(defn affect-gravity [channel]
+  (when channel
+    [{msg/type :lower-piece msg/topic [:game :board] :timeout channel}]))
+
+(defn start-landing-countdown [_ start-lock?]
+  (when start-lock?
+    (t/timeout 500)))
+
+(defn affect-landing [channel]
+  (when channel
+    [{msg/type :land-piece msg/topic [:game :board] :timeout channel}]))
