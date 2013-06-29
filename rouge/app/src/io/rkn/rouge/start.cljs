@@ -8,7 +8,7 @@
             [io.rkn.rouge.rendering :as rendering]))
 
 (defn create-app
-  ([render-config] (create-app render-config behavior/example-app))
+  ([render-config] (create-app render-config behavior/rouge-app))
   ([render-config behavior]
    (let [app (app/build behavior)
          render-fn (push-render/renderer "content" render-config render/log-fn)

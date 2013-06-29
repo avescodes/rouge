@@ -15,12 +15,11 @@
                          [:transform-enable [:game] :lower-piece [{msg/topic [:game :board]}]]])
 
 (def debugging-behavior
-  {:emit [{:in #{[:game :board] [:game :piece]}
-            :fn debug-emitter}
-           {:in #{[:*]} :fn (app/default-emitter [])}]})
+  {:emit [{:in #{[:game :board] [:game :piece]} :fn debug-emitter}
+          {:in #{[:*]} :fn (app/default-emitter [])}]})
 
 (defn ^:export main []
-  (let [behavior (merge behavior/example-app debugging-behavior)
+  (let [behavior (merge behavior/rouge-app debugging-behavior)
         {:keys [app] :as system} (start/create-app d/data-renderer-config behavior)]
     (app/consume-effects app services/services-fn)
     (put-start-game-messages (:input app))

@@ -5,15 +5,17 @@
             [io.rkn.util.platform :as plat]
             [io.rkn.rouge.game.timers :as t]))
 
+(defn game-over?
+  "Is a game over? (i.e. piece is in an invalid position)"
+  ([_ board] (game-over? board))
+  ([board] (not (b/valid-posn? board))))
+
+;; Transforms
 (defn new-game [_ msg]
   (let [rows (get msg :rows 20)
         cols (get msg :cols 10)]
     {:board {:grid (b/empty-board rows cols)
              :piece nil}}))
-
-(defn refresh-piece-if-missing [piece]
-  (when-not piece
-    [{msg/type :refresh-piece msg/topic [:game :board]}]))
 
 (defn refresh-piece [board _]
   (let [next-piece (or (:next-piece board) (p/random-tetra))]
@@ -32,6 +34,17 @@
   ([board] (if (:piece board)
              (update-in board [:piece :position :row] inc))))
 
+
+;; Continues
+(defn refresh-piece-if-missing [piece]
+  (when-not piece
+    [{msg/type :refresh-piece msg/topic [:game :board]}]))
+
+(defn end-game-if-over [board]
+  (when (game-over? board)
+    [{msg/type :end-game msg/topic [:game :board]}]))
+
+;; Derives
 (defn about-to-collide?
   "Will a piece collide with the board's grid after the next step of gravity?"
   ([_ board] (about-to-collide? board))
@@ -39,23 +52,22 @@
                lower-piece
                b/collided?)))
 
-(defn game-over?
-  "Is a game over? (i.e. piece is in an invalid position)"
-  ([_ board] (game-over? board))
-  ([board] (not (b/valid-posn? board))))
+
 
 (defn start-gravity-countdown [_ {:keys [landing?]}]
   (when-not landing?
     (t/timeout 1000)))
 
-(defn affect-gravity [channel]
-  (when channel
-    [{msg/type :lower-piece msg/topic [:game :board] :timeout channel}]))
-
 (defn start-landing-countdown [_ start-lock?]
   (when start-lock?
     (t/timeout 500)))
 
-(defn affect-landing [channel]
-  (when channel
-    [{msg/type :land-piece msg/topic [:game :board] :timeout channel}]))
+
+;; Effects
+(defn affect-gravity [timeout-ch]
+  (when timeout-ch
+    [{msg/type :lower-piece msg/topic [:game :board] :timeout timeout-ch}]))
+
+(defn affect-landing [timeout-ch]
+  (when timeout-ch
+    [{msg/type :land-piece msg/topic [:game :board] :timeout timeout-ch}]))
