@@ -4,7 +4,7 @@
             [io.pedestal.app.messages :as msg]
             [cljs.core.async :refer [chan close!]])
   (:require-macros
-    [cljs.core.async.macros :as m :refer  [go]]))
+    [cljs.core.async.macros :as m :refer [go]]))
 
 (defn timeout [ms]
   (let [c (chan)]

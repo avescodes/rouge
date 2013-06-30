@@ -6,6 +6,7 @@
             [io.rkn.rouge.start :as start]
             [io.rkn.rouge.behavior :as behavior]
             [io.rkn.rouge.services :as services]
+            [io.rkn.util.platform :as plat]
             [io.pedestal.app-tools.tooling :as tooling]))
 
 (defn put-start-game-messages [input]
@@ -15,11 +16,10 @@
                          [:transform-enable [:game] :lower-piece [{msg/topic [:game :board]}]]])
 
 (def debugging-behavior
-  {:emit [{:in #{[:game :board] [:game :piece]} :fn debug-emitter}
-          {:in #{[:*]} :fn (app/default-emitter [])}]})
+  {:emit [{:init debug-emitter}]})
 
 (defn ^:export main []
-  (let [behavior (merge behavior/rouge-app debugging-behavior)
+  (let [behavior (merge-with concat behavior/rouge-app debugging-behavior)
         {:keys [app] :as system} (start/create-app d/data-renderer-config behavior)]
     (app/consume-effects app services/services-fn)
     (put-start-game-messages (:input app))

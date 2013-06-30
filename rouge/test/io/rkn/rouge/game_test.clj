@@ -23,7 +23,7 @@
 ;; state
 
 (deftest test-app-state
-  (let [app (app/build be/example-app)]
+  (let [app (app/build be/rouge-app)]
     (is (vector?
          (test/run-sync! app [(new-game-msg 4)] :begin :default)))
     (is (= (-> app :state deref :data-model :game :board :grid) [[0 0 0 0]
@@ -40,7 +40,7 @@
                              :position {:row 0 :col 0}}}))))
 
 (deftest landing-piece-refreshes-piece-test
-  (let [app (app/build be/example-app)]
+  (let [app (app/build be/rouge-app)]
     (test/run-sync! app [(new-game-msg 4)
                          {msg/topic [:game :board] msg/type :land-piece}])
     (testing "after land-piece"
@@ -72,7 +72,7 @@
   ;; Use io.pedestal.app.query to query the current application model
 
   (deftest test-query-ui
-    (let [app (app/build be/example-app)
+    (let [app (app/build be/rouge-app)
           app-model (render/consume-app-model app (constantly nil))]
       (app/begin app)
       (is (test/run-sync! app [{msg/topic [:greeting] msg/type :set-value :value "x"}]))

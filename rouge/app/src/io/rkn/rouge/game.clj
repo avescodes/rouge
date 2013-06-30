@@ -8,7 +8,8 @@
 (defn game-over?
   "Is a game over? (i.e. piece is in an invalid position)"
   ([_ board] (game-over? board))
-  ([board] (not (b/valid-posn? board))))
+  ([board]
+   (not (b/valid-posn? board))))
 
 ;; Transforms
 (defn new-game [_ msg]
@@ -25,15 +26,16 @@
 
 (defn land-piece
   ([board _] (land-piece board))
-  ([board] (-> board
+  ([board]
+   (-> board
                (assoc :grid (b/graft-piece-to-grid board))
                (dissoc :piece))))
 
 (defn lower-piece
   ([board _] (lower-piece board))
-  ([board] (if (:piece board)
+  ([board]
+   (if (:piece board)
              (update-in board [:piece :position :row] inc))))
-
 
 ;; Continues
 (defn refresh-piece-if-missing [piece]
@@ -53,15 +55,14 @@
                b/collided?)))
 
 
-
-(defn start-gravity-countdown [_ {:keys [landing?]}]
-  (when-not landing?
+(defn start-gravity-countdown [_ {:keys [game-over? landing?]}]
+  (when-not (or game-over? landing?)
     (t/timeout 1000)))
 
-(defn start-landing-countdown [_ start-lock?]
-  (when start-lock?
+(defn start-landing-countdown [_ {:keys [game-over? about-to-collide?]}]
+  (when (and (not game-over?)
+             about-to-collide?)
     (t/timeout 500)))
-
 
 ;; Effects
 (defn affect-gravity [timeout-ch]

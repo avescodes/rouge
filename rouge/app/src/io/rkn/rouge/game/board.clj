@@ -65,7 +65,7 @@
   [{:keys [grid piece] :as board}]
   (let [piece-idxs (p/occupied-idxs piece)]
     ;; Every part of the piece is inside the board
-    (and (every? (partial inside-board? (sizeb board)) piece-idxs)
+    (and (every? (partial inside-board? (sizeg grid)) piece-idxs)
          (not-any? (partial occupied? grid) piece-idxs))))
 
 (defn graft-piece-to-grid
