@@ -34,8 +34,6 @@
             [{[:game :board :about-to-collide?] :about-to-collide? [:game :board :game-over?] :game-over?} [:game :board :landing-channel] g/start-landing-countdown :map]]
    :effect #{[#{[:game :board :gravity-channel]} g/affect-gravity :single-val]
              [#{[:game :board :landing-channel]} g/affect-landing :single-val]}
-   :emit [[#{[:*]} (app/default-emitter [])]
+   :emit [[#{[:game :display]} (app/default-emitter [])]
           {:in #{[:game]} :fn game-emitter :init initial-game :mode :always}]})
-k
-
 

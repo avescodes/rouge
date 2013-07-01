@@ -25,14 +25,20 @@
         (assoc-in [:next-piece] (p/random-tetra)))))
 
 (defn land-piece
-  ([board _] (land-piece board))
+  ([board {:keys [timeout]}]
+   (if (= timeout (:landing-channel board))
+     (land-piece board)
+     board))
   ([board]
    (-> board
-               (assoc :grid (b/graft-piece-to-grid board))
-               (dissoc :piece))))
+       (assoc :grid (b/graft-piece-to-grid board))
+       (dissoc :piece))))
 
 (defn lower-piece
-  ([board _] (lower-piece board))
+  ([board {:keys [timeout]}]
+   (if (= timeout (:gravity-channel board))
+     (lower-piece board)
+     board))
   ([board]
    (if (:piece board)
      (update-in board [:piece :position :row] inc))))
@@ -42,7 +48,9 @@
                     :left (update-in board [:piece :position :col] dec)
                     :right (update-in board [:piece :position :col] inc)
                     :up (p/rotate board)
-                    :down (lower-piece board msg)
+                    :down (if (:about-to-collide? board)
+                            (land-piece board)
+                            (lower-piece board))
                     board)]
     (if (b/valid-posn? potential)
       potential
@@ -62,7 +70,6 @@
   ([board] (-> board
                lower-piece
                b/collided?)))
-
 
 (defn start-gravity-countdown [_ {:keys [game-over? landing?]}]
   (when-not (or game-over? landing?)
