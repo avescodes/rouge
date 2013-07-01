@@ -117,14 +117,13 @@
       [(+ row offset-row)
        (+ col offset-col)])))
 
-(comment
-  ;; Rotation
-  (defn next-rotation-shape [piece]
-    (let [{:keys [shape rotations]} piece
-          [new-shape & new-rotations] (conj rotations shape)]
-      (-> piece
-          (assoc :shape new-shape)
-          (assoc :rotations (vec new-rotations)))))
+;; Rotation
+(defn next-rotation-shape [piece]
+  (let [{:keys [shape rotations]} piece
+        [new-shape & new-rotations] (conj rotations shape)]
+    (-> piece
+        (assoc :shape new-shape)
+        (assoc :rotations (vec new-rotations)))))
 
-  (defn rotate [game]
-    (assoc game :piece (next-rotation-shape (:piece game)))))
+(defn rotate [board]
+  (update-in board [:piece] next-rotation-shape))

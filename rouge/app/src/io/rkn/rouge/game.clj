@@ -35,16 +35,25 @@
   ([board _] (lower-piece board))
   ([board]
    (if (:piece board)
-             (update-in board [:piece :position :row] inc))))
+     (update-in board [:piece :position :row] inc))))
+
+(defn player-input [board {:keys [direction]}]
+  (let [potential (condp = direction
+                    :left (update-in board [:piece :position :col] dec)
+                    :right (update-in board [:piece :position :col] inc)
+                    :up (p/rotate board)
+                    :down (lower-piece board msg)
+                    board)]
+    (if (b/valid-posn? potential)
+      potential
+      board)))
+
 
 ;; Continues
 (defn refresh-piece-if-missing [piece]
   (when-not piece
     [{msg/type :refresh-piece msg/topic [:game :board]}]))
 
-(defn end-game-if-over [board]
-  (when (game-over? board)
-    [{msg/type :end-game msg/topic [:game :board]}]))
 
 ;; Derives
 (defn about-to-collide?
