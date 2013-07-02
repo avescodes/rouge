@@ -16,7 +16,9 @@
   (let [rows (get msg :rows 20)
         cols (get msg :cols 10)]
     {:board {:grid (b/empty-grid rows cols)
-             :piece nil}}))
+             :piece nil
+             :score 0
+             :lines-cleared 0}}))
 
 (defn refresh-piece [board _]
   (let [next-piece (or (:next-piece board) (p/random-tetra))]
@@ -43,8 +45,31 @@
    (if (:piece board)
      (update-in board [:piece :position :row] inc))))
 
+(defn level
+  "Return the board's level.
+
+  = Quotient( cleared-lines / 10 ) + 1"
+  ([_ board] (level board))
+  ([board] (+ 1 (quot (get board :lines-cleared 0) 10))))
+
+(def points {1 100
+             2 300
+             3 500
+             4 800})
+
+(defn bump-score
+  "Increase the score of a board by cleared-points * level."
+  [board cleared]
+  (let [to-add (* (get points cleared 0)
+                  (level board))]
+    (update-in board [:score] #(+ % to-add))))
+
 (defn clear-lines [board _]
-  (b/clear-lines board))
+  (let [cleared-lines (count (filter b/full-row? (:grid  board)))
+        cleared-board (b/clear-lines board)]
+    (-> cleared-board
+        (bump-score cleared-lines)
+        (update-in [:lines-cleared] #(+ % cleared-lines)))))
 
 (defn player-input [board {:keys [direction]}]
   (let [potential (condp = direction
