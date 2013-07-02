@@ -16,7 +16,7 @@
      [:transform-enable [:game] :down [{msg/type :player-input msg/topic [:game :board] :direction :down}]]]))
 
 (defn initial-game [_]
-  [[:transform-enable [:game] :new-game [{msg/topic [:game] :rows 5 :cols 10}]]])
+  [[:transform-enable [:game] :new-game [{msg/topic [:game] :rows 20 :cols 10}]]])
 
 (def rouge-app
   {:version 2
