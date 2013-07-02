@@ -15,7 +15,7 @@
 (defn new-game [_ msg]
   (let [rows (get msg :rows 20)
         cols (get msg :cols 10)]
-    {:board {:grid (b/empty-board rows cols)
+    {:board {:grid (b/empty-grid rows cols)
              :piece nil}}))
 
 (defn refresh-piece [board _]
@@ -43,6 +43,9 @@
    (if (:piece board)
      (update-in board [:piece :position :row] inc))))
 
+(defn clear-lines [board _]
+  (b/clear-lines board))
+
 (defn player-input [board {:keys [direction]}]
   (let [potential (condp = direction
                     :left (update-in board [:piece :position :col] dec)
@@ -62,6 +65,9 @@
   (when-not piece
     [{msg/type :refresh-piece msg/topic [:game :board]}]))
 
+(defn clear-lines-if-clearable [grid]
+  (when (b/clearable? grid)
+    [{msg/type :clear-lines msg/topic [:game :board]}]))
 
 ;; Derives
 (defn about-to-collide?

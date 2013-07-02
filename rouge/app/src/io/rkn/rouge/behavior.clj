@@ -24,9 +24,11 @@
                [:refresh-piece [:game :board] g/refresh-piece]
                [:lower-piece [:game :board] g/lower-piece]
                [:land-piece [:game :board] g/land-piece]
+               [:clear-lines [:game :board] g/clear-lines]
                ;; Player transforms
                [:player-input [:game :board] g/player-input]]
-   :continue [[#{[:game :board :piece]} g/refresh-piece-if-missing :single-val] ]
+   :continue [[#{[:game :board :piece]} g/refresh-piece-if-missing :single-val]
+              [#{[:game :board :grid]} g/clear-lines-if-clearable :single-val]]
    :derive [[#{[:game :board]} [:game :display :board] b/graft-piece-to-grid :single-val]
             [#{[:game :board]} [:game :board :about-to-collide?] g/about-to-collide? :single-val]
             [#{[:game :board]} [:game :board :game-over?] g/game-over? :single-val]

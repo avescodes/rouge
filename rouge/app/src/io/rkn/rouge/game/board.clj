@@ -4,9 +4,9 @@
 ;; Board creation
 (def create-vector (comp vec repeat))
 
-(defn empty-board
+(defn empty-grid
   ([rows cols fill] (create-vector rows (create-vector cols fill)))
-  ([rows cols] (empty-board rows cols 0)))
+  ([rows cols] (empty-grid rows cols 0)))
 ;;
 ;; Utility Functions
 (defn sizeg
@@ -80,3 +80,23 @@
          (recur (set-in-grid grafted-grid idx (:color piece))
                 remaining-idxs)))
      grid)))
+
+(defn full-row?
+  "Return true if a vector row contains no zero elements."
+  [row] (not-any? zero? row))
+
+(defn clearable?
+  "Return truthy if grid has any full rows"
+  [grid]
+  (some full-row? grid))
+
+(defn clear-lines
+  "Remove all full-rows from the grid, replacing them with new empty rows at
+  the top of the grid."
+  [{:keys [grid] :as board}]
+  (let [[rows cols] (sizeg grid)
+        cleared-grid (remove full-row? grid)
+        lines-needed (- rows (count cleared-grid))
+        new-grid (into [] (concat (empty-grid lines-needed cols)
+                                   cleared-grid))]
+    (assoc board :grid new-grid)))
