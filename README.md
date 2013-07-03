@@ -1,13 +1,9 @@
-# tetra
+# rouge
 
-A Clojure library designed to ... well, that part is up to you.
+Start working on this application by writing its behavior in the file
+`app/src/io/rkn/rouge/behavior.clj`
 
-## Usage
+## Links
 
-FIXME
-
-## License
-
-Copyright © 2013 FIXME
-
-Distributed under the Eclipse Public License, the same as Clojure.
+* [Getting Started](https://github.com/pedestal/pedestal/tree/master/app#usage)
+* [Overview of how pedestal applications work](http://pedestal.io/documentation/application-overview/)
