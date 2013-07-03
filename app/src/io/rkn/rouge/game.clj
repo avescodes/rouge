@@ -95,6 +95,14 @@
     [{msg/type :clear-lines msg/topic [:game :board]}]))
 
 ;; Derives
+
+(defn next-piece-display [_ board]
+  (let [mini-board (b/empty-grid 4 12)
+        piece (-> (:next-piece board)
+                  (assoc :position {:row 0 :col 0}))]
+    (b/graft-piece-to-grid {:grid mini-board
+                            :piece piece})))
+
 (defn about-to-collide?
   "Will a piece collide with the board's grid after the next step of gravity?"
   ([_ board] (about-to-collide? board))

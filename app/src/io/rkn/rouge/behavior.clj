@@ -32,6 +32,7 @@
    :derive [[#{[:game :board :score]} [:game :display :score] (fn [_ x] x) :single-val]
             [#{[:game :board]} [:game :display :board] b/graft-piece-to-grid :single-val]
             [#{[:game :board]} [:game :display :level] g/level :single-val]
+            [#{[:game :board]} [:game :display :next-piece] g/next-piece-display :single-val]
             [#{[:game :board]} [:game :board :about-to-collide?] g/about-to-collide? :single-val]
             [#{[:game :board]} [:game :board :game-over?] g/game-over? :single-val]
             [{[:game :board :piece :position :row] :row [:game :board :about-to-collide?] :landing? [:game :board :game-over?] :game-over?} [:game :board :gravity-channel] g/start-gravity-countdown :map]
