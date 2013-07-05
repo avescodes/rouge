@@ -7,30 +7,20 @@
   (is (= 1 (max-kick (tetras :t))))
   (is (= 3 (max-kick (tetras :line)))))
 
-#_(deftest next-rotation-shape-test
-  (let [one-rotation-piece {:shape :a
-                            :rotations []}]
-    (is (= one-rotation-piece (next-rotation-shape one-rotation-piece))))
-  (let [two-rotation-piece {:shape :a
-                            :rotations [:b]}]
-    (is (= {:shape :b
-            :rotations [:a]}
-           (next-rotation-shape two-rotation-piece)))
-    (is (= two-rotation-piece
-           (-> two-rotation-piece
-               next-rotation-shape
-               next-rotation-shape))))
-  (let [four-rotation-piece {:shape :a
-                             :rotations [:b :c :d]}]
-    (is (= {:shape :b
-            :rotations [:c :d :a]}
-           (next-rotation-shape four-rotation-piece)))
-    (is (= {:shape :c
-            :rotations [:d :a :b]}
-           (-> four-rotation-piece next-rotation-shape next-rotation-shape)))
-    (is (= {:shape :d
-            :rotations [:a :b :c]}
-           (-> four-rotation-piece next-rotation-shape next-rotation-shape next-rotation-shape)))
-    (is (= {:shape :a
-            :rotations [:b :c :d]}
-           (-> four-rotation-piece next-rotation-shape next-rotation-shape next-rotation-shape next-rotation-shape)))))
+(deftest rotate-idx-test
+  (is (= [1 3]
+         (rotate-idx [4 4] [0 1])))
+  (is (= [3 2]
+         (rotate-idx [4 4] [1 3])))
+  (is (= [2 0]
+         (rotate-idx [4 4] [3 2])))
+  (is (= [0 1]
+         (rotate-idx [4 4] [2 0])))
+  (is (thrown-with-msg? clojure.lang.ExceptionInfo #"only handles rotation of square matrices"
+                        (rotate-idx [4 2] [0 0]))))
+
+(deftest rotate-shape-test
+  (is (= [[0 1]
+          [0 1]]
+         (rotate-shape [[1 1]
+                        [0 0]]))))

@@ -17,7 +17,8 @@
 
 (deftest test-new-game-transform
   (is (= (new-game {} (new-game-msg 1))
-         {:board  {:grid [[0]], :piece nil}})))
+         {:board  {:grid [[0]], :piece nil
+                   :score 0, :lines-cleared 0}})))
 
 ;; Build an application, send a message to a transform and check the transform
 ;; state

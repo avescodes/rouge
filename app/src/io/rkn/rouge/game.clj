@@ -3,7 +3,8 @@
             [io.rkn.rouge.game.board :as b]
             [io.rkn.rouge.game.pieces :as p]
             [io.rkn.util.platform :as plat]
-            [io.rkn.rouge.game.timers :as t]))
+            [io.rkn.rouge.game.timers :as t]
+            [io.rkn.rouge.game.grid :as g]))
 
 (defn game-over?
   "Is a game over? (i.e. piece is in an invalid position)"
@@ -15,7 +16,7 @@
 (defn new-game [_ msg]
   (let [rows (get msg :rows 20)
         cols (get msg :cols 10)]
-    {:board {:grid (b/empty-grid rows cols)
+    {:board {:grid (g/empty-grid rows cols)
              :piece nil
              :score 0
              :lines-cleared 0}}))
@@ -75,7 +76,7 @@
   (let [potential (condp = direction
                     :left (update-in board [:piece :position :col] dec)
                     :right (update-in board [:piece :position :col] inc)
-                    :up (p/rotate board)
+                    :up (update-in board [:piece :shape] p/rotate-shape)
                     :down (if (:about-to-collide? board)
                             (land-piece board)
                             (lower-piece board))
@@ -97,7 +98,7 @@
 ;; Derives
 
 (defn next-piece-display [_ board]
-  (let [mini-board (b/empty-grid 4 12)
+  (let [mini-board (g/empty-grid 4 12)
         piece (-> (:next-piece board)
                   (assoc :position {:row 0 :col 0}))]
     (b/graft-piece-to-grid {:grid mini-board

@@ -6,20 +6,6 @@
   (is (= [1 2]
          (sizeb {:grid [[0 0]]}))))
 
-(deftest empty-board-test
-  (is (= [[:foo :foo]]
-         (empty-board 1 2 :foo))))
-
-(deftest mapg-test
-  (is (= [[1 1]]
-         (mapg inc [[0 0]]))))
-
-(deftest set-in-grid-test
-  (is (= [[0 :foo]]
-         (set-in-grid [[0 0]]
-                       [0 1]
-                       :foo))))
-
 (deftest graft-piece-to-grid-test
   (let [board {:grid [[0 0]
                       [1 1]]

@@ -1,31 +1,8 @@
 (ns ^:shared io.rkn.rouge.game.board
-  (:require [io.rkn.rouge.game.pieces :as p]))
+  (:require [io.rkn.rouge.game.grid :as g]
+            [io.rkn.rouge.game.pieces :as p]))
 
-;; Board creation
-(def create-vector (comp vec repeat))
-
-(defn empty-grid
-  ([rows cols fill] (create-vector rows (create-vector cols fill)))
-  ([rows cols] (empty-grid rows cols 0)))
-;;
-;; Utility Functions
-(defn sizeg
-  "Game grid's size as a row-major index (i.e. [1 2] for grid [[x x]]).
-
-   Assumes uniform sized columns."
-  [grid]
-  [(count grid) (count (first grid))])
-(defn sizeb [board] (sizeg (:grid board)))
-
-(defn mapg
-  "Map f over each element in grid."
-  [f grid]
-  (mapv (fn [row] (mapv f row)) grid))
-
-(defn set-in-grid
-      "Set value at idx in board to v. idx is in row-major order."
-      [grid idx v]
-      (assoc-in grid idx v))
+(defn sizeb [board] (g/size (:grid board)))
 
 ;; Game Logic predicates
 (defn occupied?
@@ -65,7 +42,7 @@
   [{:keys [grid piece] :as board}]
   (let [piece-idxs (p/occupied-idxs piece)]
     ;; Every part of the piece is inside the board
-    (and (every? (partial inside-board? (sizeg grid)) piece-idxs)
+    (and (every? (partial inside-board? (g/size grid)) piece-idxs)
          (not-any? (partial occupied? grid) piece-idxs))))
 
 (defn graft-piece-to-grid
@@ -77,7 +54,7 @@
             [idx & remaining-idxs] (p/occupied-idxs piece)]
        (if (nil? idx)
          grafted-grid
-         (recur (set-in-grid grafted-grid idx (:color piece))
+         (recur (g/set-in-grid grafted-grid idx (:color piece))
                 remaining-idxs)))
      grid)))
 
@@ -94,9 +71,9 @@
   "Remove all full-rows from the grid, replacing them with new empty rows at
   the top of the grid."
   [{:keys [grid] :as board}]
-  (let [[rows cols] (sizeg grid)
+  (let [[rows cols] (g/size grid)
         cleared-grid (remove full-row? grid)
         lines-needed (- rows (count cleared-grid))
-        new-grid (into [] (concat (empty-grid lines-needed cols)
+        new-grid (into [] (concat (g/empty-grid lines-needed cols)
                                    cleared-grid))]
     (assoc board :grid new-grid)))

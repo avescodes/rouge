@@ -1,102 +1,42 @@
-(ns ^:shared io.rkn.rouge.game.pieces)
+(ns ^:shared io.rkn.rouge.game.pieces
+  (:require [io.rkn.rouge.game.grid :as g]))
 
 (def tetras
-  {:square {:shape [[0 0 0 0]
-                    [0 1 1 0]
-                    [0 1 1 0]
-                    [0 0 0 0]]
-            :position {:row -1, :col 3}
-            :color 1
-            :rotations []}
+  {:square {:shape [[1 1]
+                    [1 1]]
+            :position {:row 0, :col 4}
+            :color 1}
    :line {:shape [[0 0 0 0]
                   [1 1 1 1]
                   [0 0 0 0]
                   [0 0 0 0]]
           :position {:row -1 :col 3}
-          :color 2
-          :rotations [[[0 0 1 0]
-                       [0 0 1 0]
-                       [0 0 1 0]
-                       [0 0 1 0]]
-                      [[0 0 0 0]
-                       [0 0 0 0]
-                       [1 1 1 1]
-                       [0 0 0 0]]
-                      [[0 1 0 0]
-                       [0 1 0 0]
-                       [0 1 0 0]
-                       [0 1 0 0]]]}
+          :color 2}
    :t {:shape [[0 1 0]
                [1 1 1]
                [0 0 0]]
        :position {:row 0 :col 3}
-       :color 3
-       :rotations [[[0 1 0]
-                    [0 1 1]
-                    [0 1 0]]
-                   [[0 0 0]
-                    [1 1 1]
-                    [0 1 0]]
-                   [[0 1 0]
-                    [1 1 0]
-                    [0 1 0]]]}
+       :color 3}
    :j {:shape [[1 0 0]
                [1 1 1]
                [0 0 0]]
        :position {:row 0 :col 3}
-       :color 4
-       :rotations [[[0 1 1]
-                    [0 1 0]
-                    [0 1 0]]
-                   [[0 0 0]
-                    [1 1 1]
-                    [0 0 1]]
-                   [[0 1 0]
-                    [0 1 0]
-                    [1 1 0]]
-                   ]}
+       :color 4}
    :l {:shape [[0 0 1]
                [1 1 1]
                [0 0 0]]
        :position {:row 0 :col 3}
-       :color 5
-       :rotations [[[0 1 0]
-                    [0 1 0]
-                    [0 1 1]]
-                   [[0 0 0]
-                    [1 1 1]
-                    [1 0 0]]
-                   [[1 1 0]
-                    [0 1 0]
-                    [0 1 0]]]}
+       :color 5}
    :z {:shape [[1 1 0]
                [0 1 1]
                [0 0 0]]
        :position {:row 0 :col 3}
-       :color 6
-       :rotations [[[0 0 1]
-                    [0 1 1]
-                    [0 1 0]]
-                   [[0 0 0]
-                    [1 1 0]
-                    [0 1 1]]
-                   [[0 1 0]
-                    [1 1 0]
-                    [1 0 0]]]}
+       :color 6}
    :s {:shape [[0 1 1]
                [1 1 0]
                [0 0 0]]
        :position {:row 0 :col 3}
-       :color 7
-       :rotations [[[0 1 0]
-                    [0 1 1]
-                    [0 0 1]]
-                   [[0 0 0]
-                    [0 1 1]
-                    [1 1 0]]
-                   [[1 0 0]
-                    [1 1 0]
-                    [0 1 0]]]}})
+       :color 7}})
 
 (defn random-tetra []
   (rand-nth (vals tetras)))
@@ -117,13 +57,21 @@
       [(+ row offset-row)
        (+ col offset-col)])))
 
-;; Rotation
-(defn next-rotation-shape [piece]
-  (let [{:keys [shape rotations]} piece
-        [new-shape & new-rotations] (conj rotations shape)]
-    (-> piece
-        (assoc :shape new-shape)
-        (assoc :rotations (vec new-rotations)))))
+(defn rotate-idx [size idx]
+  (when (not (apply = size))
+    (throw (ex-info "rotate-size only handles rotation of square matrices." {:size size})))
+  (let [s (- (first size) 1)
+        [y x] idx]
+    [x (- s y)]))
 
-(defn rotate [board]
-  (update-in board [:piece] next-rotation-shape))
+(defn rotate-shape [shape]
+  (let [size (g/size shape)
+        new-shape (apply g/empty-grid size)]
+    (loop [grid new-shape
+          [idx & remaining] (occupied-idxs {:shape shape
+                                            :position {:row 0 :col 0}})]
+      (if idx
+        (let [rotated-idx (rotate-idx size idx)]
+          (recur (assoc-in grid rotated-idx (get-in shape idx))
+                 remaining))
+        grid))))
