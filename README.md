@@ -1,4 +1,4 @@
-# Rouge
+# Rouge [![Build Status](https://travis-ci.org/rkneufeld/rouge.png?branch=master)](https://travis-ci.org/rkneufeld/rouge)
 
 It's that falling block game, but with [Pedestal](http://pedestal.io) and [core.async](http://github.com/clojure/core.async)!
 
