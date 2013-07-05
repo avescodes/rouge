@@ -7,7 +7,7 @@
                  [io.pedestal/pedestal.app "0.1.9"]
                  [io.pedestal/pedestal.app-tools "0.1.9"]
                  [com.cemerick/piggieback "0.0.4"]
-                 [core.async/core.async "0.1.0-SNAPSHOT"]]
+                 [io.rkn/core.async  "0.1.0-SNAPSHOT"]]
   :profiles {:dev {:source-paths ["dev"]}}
   :min-lein-version "2.0.0"
   :source-paths ["app/src" "app/templates"]
