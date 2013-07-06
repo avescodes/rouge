@@ -16,8 +16,8 @@
   [(count grid) (count (first grid))])
 
 (defn set-in-grid
-      "Set value at idx in board to v. idx is in row-major order."
-      [grid idx v]
-      (assoc-in grid idx v))
+  "Set value at idx in board to v. idx is in row-major order."
+  [grid idx v]
+  (assoc-in grid idx v))
 
 

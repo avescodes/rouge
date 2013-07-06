@@ -6,6 +6,7 @@
             [io.pedestal.app.render :as render]
             [io.pedestal.app.util.test :as test]
             [io.rkn.rouge.behavior :as be]
+            [io.rkn.rouge.game.grid :as grid]
             [io.rkn.rouge.game.timers :as timers]
             [clojure.core.async :as as])
   (:use clojure.test
@@ -25,15 +26,11 @@
 ;; state
 
 (deftest test-app-state
-  (with-redefs [timers/timeout (fn [_] (as/chan))]
-    (let [app (app/build be/rouge-app)]
-      (is (vector?
-            (test/run-sync! app [(new-game-msg 4)] :begin :default)))
-      (is (= (-> app :state deref :data-model :game :board :grid) [[0 0 0 0]
-                                                                   [0 0 0 0]
-                                                                   [0 0 0 0]
-                                                                   [0 0 0 0]]))
-      (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically"))))
+  (let [app (app/build be/rouge-app)]
+    (is (vector?
+          (test/run-sync! app [(new-game-msg 10)] :begin :default)))
+    (is (= (-> app :state deref :data-model :game :board :grid) (grid/empty-grid 10 10)))
+    (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically")))
 
 (deftest land-piece-test
   (is (= {:grid [[2]]}
@@ -43,12 +40,11 @@
                               :position {:row 0 :col 0}}}))))
 
 (deftest landing-piece-refreshes-piece-test
-  (with-redefs [timers/timeout (fn [ms] (java.util.UUID/randomUUID))]
-    (let [app (app/build be/rouge-app)]
-      (test/run-sync! app [(new-game-msg 4)
-                           {msg/topic [:game :board] msg/type :land-piece}])
-      (testing "after land-piece"
-        (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically")))))
+  (let [app (app/build be/rouge-app)]
+    (test/run-sync! app [(new-game-msg 4)
+                         {msg/topic [:game :board] msg/type :land-piece}])
+    (testing "after land-piece"
+      (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically"))))
 
 (deftest about-to-collide?-test
   (let [board {:grid [[0]
