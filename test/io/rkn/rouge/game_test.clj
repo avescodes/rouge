@@ -5,14 +5,15 @@
             [io.pedestal.app.messages :as msg]
             [io.pedestal.app.render :as render]
             [io.pedestal.app.util.test :as test]
-            [io.rkn.rouge.behavior :as be])
+            [io.rkn.rouge.behavior :as be]
+            [io.rkn.rouge.game.timers :as timers]
+            [clojure.core.async :as as])
   (:use clojure.test
         io.rkn.rouge.game
         [io.pedestal.app.query :only [q]]))
 
 (defn new-game-msg [size]
   {msg/type :new-game msg/topic [:game] :rows size :cols size})
-(def refresh-piece-msg {msg/type :refresh-piece msg/topic [:game :board]})
 ;; Test a transform function
 
 (deftest test-new-game-transform
@@ -24,28 +25,30 @@
 ;; state
 
 (deftest test-app-state
-  (let [app (app/build be/rouge-app)]
-    (is (vector?
-         (test/run-sync! app [(new-game-msg 4)] :begin :default)))
-    (is (= (-> app :state deref :data-model :game :board :grid) [[0 0 0 0]
-                                                                 [0 0 0 0]
-                                                                 [0 0 0 0]
-                                                                 [0 0 0 0]]))
-    (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically")))
+  (with-redefs [timers/timeout (fn [_] (as/chan))]
+    (let [app (app/build be/rouge-app)]
+      (is (vector?
+            (test/run-sync! app [(new-game-msg 4)] :begin :default)))
+      (is (= (-> app :state deref :data-model :game :board :grid) [[0 0 0 0]
+                                                                   [0 0 0 0]
+                                                                   [0 0 0 0]
+                                                                   [0 0 0 0]]))
+      (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically"))))
 
 (deftest land-piece-test
   (is (= {:grid [[2]]}
-        (land-piece {:grid [[0]]
-                     :piece {:shape [[1]]
-                             :color 2
-                             :position {:row 0 :col 0}}}))))
+         (land-piece {:grid [[0]]
+                      :piece {:shape [[1]]
+                              :color 2
+                              :position {:row 0 :col 0}}}))))
 
 (deftest landing-piece-refreshes-piece-test
-  (let [app (app/build be/rouge-app)]
-    (test/run-sync! app [(new-game-msg 4)
-                         {msg/topic [:game :board] msg/type :land-piece}])
-    (testing "after land-piece"
-      (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically"))))
+  (with-redefs [timers/timeout (fn [ms] (java.util.UUID/randomUUID))]
+    (let [app (app/build be/rouge-app)]
+      (test/run-sync! app [(new-game-msg 4)
+                           {msg/topic [:game :board] msg/type :land-piece}])
+      (testing "after land-piece"
+        (is (-> app :state deref :data-model :game :board :piece) "refresh-piece occurs automatically")))))
 
 (deftest about-to-collide?-test
   (let [board {:grid [[0]
@@ -57,30 +60,26 @@
     (is (not (about-to-collide? (assoc-in board [:piece :position] not-touching))))
     (is (not (about-to-collide? (dissoc board :piece))))))
 
-(comment
-  (deftest level-test
-    (are [expected game]
-         (is (= expected (level game)))
-         1 {:lines-cleared 0}
-         1 {:lines-cleared 9}
-         2 {:lines-cleared 10}))
+(deftest level-test
+  (are [expected game]
+       (is (= expected (level game)))
+       1 {:lines-cleared 0}
+       1 {:lines-cleared 9}
+       2 {:lines-cleared 10}))
 
-  (deftest bump-score-test
-    (are [original-game cleared expected]
-         (is (= expected (bump-score original-game cleared)))
-         {:score 0 :lines-cleared 0} 4 {:score 800 :lines-cleared 4}
-         {:score 1000 :lines-cleared 10} 2 {:score 1600 :lines-cleared 12}))
-  ;; Use io.pedestal.app.query to query the current application model
+(deftest bump-score-test
+  (are [board cleared expected]
+       (is (= expected (bump-score board cleared)))
+       {:score 0 :lines-cleared 1} 4 {:score 800 :lines-cleared 1}
+       {:score 1000 :lines-cleared 10} 2 {:score 1600 :lines-cleared 10}))
 
-  (deftest test-query-ui
-    (let [app (app/build be/rouge-app)
-          app-model (render/consume-app-model app (constantly nil))]
-      (app/begin app)
-      (is (test/run-sync! app [{msg/topic [:greeting] msg/type :set-value :value "x"}]))
-      (is (= (q '[:find ?v
-                  :where
-                  [?n :t/path [:greeting]]
-                  [?n :t/value ?v]]
-                @app-model)
-             [["x"]])))))
-
+(deftest clear-lines-test
+  (is (= {:grid [[0 0]
+                 [0 0]]
+          :score 300
+          :lines-cleared 2}
+         (clear-lines {:grid [[1 1]
+                              [1 1]]
+                       :score 0
+                       :lines-cleared 0}
+                      {}))))

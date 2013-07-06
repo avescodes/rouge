@@ -78,25 +78,24 @@
     (is (not (valid-posn? (with-posn out-left game))))
     (is (not (valid-posn? (with-posn out-right game))))))
 
-(comment
-  (deftest clearable?-test
-    (is (clearable? {:board [[1 1]]}))
-    (is (not (clearable? {:board [[0 1]
-                                  [0 0]]}))))
+(deftest clearable?-test
+  (is (clearable? [[1 1]]))
+  (is (not (clearable? [[0 1]
+                        [0 0]]))))
 
-  (deftest clear-lines-test
-    (is (= {:board [[0 0]
-                    [0 2]]}
-           (clear-lines {:board [[0 2]
-                                 [1 1]]})))
-    (is (= {:board [[0 0]
-                    [0 0]
-                    [0 0]
-                    [2 0]
-                    [0 4]]}
-           (clear-lines {:board  [[0 0]
-                                  [1 1]
-                                  [2 0]
-                                  [3 3]
-                                  [0 4]]})))))
+(deftest clear-lines-test
+  (is (= {:grid [[0 0]
+                 [0 2]]}
+         (clear-lines {:grid [[0 2]
+                              [1 1]]})))
+  (is (= {:grid [[0 0]
+                 [0 0]
+                 [0 0]
+                 [2 0]
+                 [0 4]]}
+         (clear-lines {:grid  [[0 0]
+                               [1 1]
+                               [2 0]
+                               [3 3]
+                               [0 4]]}))))
 
