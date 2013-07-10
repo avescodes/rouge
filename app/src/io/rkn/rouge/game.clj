@@ -98,7 +98,7 @@
 ;; Derives
 
 (defn next-piece-display [_ board]
-  (let [mini-board (g/empty-grid 4 12)
+  (let [mini-board (g/empty-grid 4 4)
         piece (-> (:next-piece board)
                   (assoc :position {:row 0 :col 0}))]
     (b/graft-piece-to-grid {:grid mini-board

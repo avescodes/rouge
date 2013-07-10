@@ -30,7 +30,7 @@
    :continue [[#{[:game :board :piece]} g/refresh-piece-if-missing :single-val]
               [#{[:game :board :grid]} g/clear-lines-if-clearable :single-val]]
    :derive [[#{[:game :board :score]} [:game :display :score] (fn [_ x] x) :single-val]
-            [#{[:game :board]} [:game :display :board] b/graft-piece-to-grid :single-val]
+            [#{[:game :board]} [:game :display :board] (fn [_ b] (select-keys b [:grid :piece])) :single-val]
             [#{[:game :board]} [:game :display :level] g/level :single-val]
             [#{[:game :board]} [:game :display :next-piece] g/next-piece-display :single-val]
             [#{[:game :board]} [:game :board :about-to-collide?] g/about-to-collide? :single-val]
@@ -39,6 +39,9 @@
             [{[:game :board :about-to-collide?] :about-to-collide? [:game :board :game-over?] :game-over?} [:game :board :landing-channel] g/start-landing-countdown :map]]
    :effect #{[#{[:game :board :gravity-channel]} g/affect-gravity :single-val]
              [#{[:game :board :landing-channel]} g/affect-landing :single-val]}
-   :emit [[#{[:game :display]} (app/default-emitter [])]
+   :emit [[#{[:game :display :board :*]
+             [:game :display :level]
+             [:game :display :score]
+             [:game :display :next-piece]} (app/default-emitter [])]
           {:in #{[:game]} :fn game-emitter :init initial-game :mode :always}]})
 
