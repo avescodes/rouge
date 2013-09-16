@@ -19,7 +19,6 @@ Right now the game is completely rendered in Pedestal's Data UI, but that's pret
     * Any hold-overs from [console](https://github.com/rkneufeld/rouge/tree/console).
     * Figuring out how to work with the game "loop" (core.async timeout channels) in test
          * Idea: `with-redefs` the timeout channel generating function to control this.
-         * Follow up: fix timing issues in tests.
     * In general, just more tests.
 * Tight graphics (custom renderer)
 * Keyboard input
