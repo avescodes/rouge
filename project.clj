@@ -7,7 +7,7 @@
                  [io.pedestal/pedestal.app "0.2.1"]
                  [io.pedestal/pedestal.app-tools "0.2.1"]
                  [com.cemerick/piggieback "0.1.0"]
-                 [io.rkn/core.async  "0.1.0-SNAPSHOT"]]
+                 [org.clojure/core.async  "0.1.222.0-83d0c2-alpha"]]
   :min-lein-version "2.0.0"
   :source-paths ["app/src" "app/templates"]
   :resource-paths ["config"]
